@@ -24,7 +24,7 @@ const signin = async (req, res) => {
       expiresIn: "1h",
     });
 
-    res.status(200).json({"name":oldUser.name,"email":oldUser.email,"isAuthenticated": true });
+    res.status(200).json({"name":oldUser.name,"email":oldUser.email,"isAuthenticated": true,'token':token });
   } catch (error) {
     res.status(500).json({ message: "Something went wrong" });
     console.log(error);
@@ -44,17 +44,17 @@ const signup = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    
-    const token = jwt.sign({ email: result.email, id: result._id }, secret, {
-      expiresIn: "1h",
-    });
     const result = await User.create({
       email,
       password: hashedPassword,
       name: `${firstName} ${lastName}`,
       contactNumber:contactno,
-      token:token
+     
     });
+    const token = jwt.sign({ email: result.email, id: result._id }, secret, {
+      expiresIn: "1h",
+    });
+   
      result.save();
     res.status(201).json({ result, token });
   } catch (error) {
